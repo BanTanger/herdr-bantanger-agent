@@ -7,8 +7,10 @@ Changes / 未读, and a reading pane where a Cmd-clicked file lands.
 ![Agent Deck Plus](preview.png)
 
 Everything here is a folder laid out like `~/.config/herdr-app`: one layout, the
-mods it needs, the theme it names, and the one script the reading pane depends on.
-`RECIPE.md` builds it from an empty folder.
+thirteen mods it uses (eleven the layout draws, plus `agenttrail` on `⌘⇧M` and
+`tourist` on `⌘⇧G`), the theme it names, and the one script the reading pane depends
+on. `RECIPE.md` builds the layout from an empty folder; `agenttrail-RECIPE.md` and
+`tourist-RECIPE.md` do the same for those two mods.
 
 ## Install
 
@@ -23,14 +25,17 @@ herdr-app check ~/.config/herdr-app/mods/agent-deck-agents           # and each 
 herdr-app do layout.switch '{"name":"agent-deck-plus"}'
 ```
 
-`keys.json` here holds only the mod's own keys (`mod:preview-plus`); merge that
-section into yours rather than replacing the file.
+`keys.json` here holds `⌘⇧M`/`⌘⇧G` for the two companion mods, `mod:agenttrail`'s
+zoom keys and `mod:preview-plus`'s; merge those sections into yours rather than
+replacing the file.
 
 Needs Herdr.app 0.1.18 or newer with herdr-core, `herdr-app` on `PATH`, and the
 Python 3 in `/usr/bin` for `bin/open`. Optional: `mmdc` (Mermaid diagrams),
 `prism-link` (the 已关联 chip — set `setShared("prism.feishu", "https://project.feishu.cn/<space>")`
-if your labels carry a bare `req`), `guided-review` (the 评审 chip), and
-[tourist](https://github.com/BanTanger/herdr-mods/tree/main/tourist) (the 导览 rows in 未读).
+if your labels carry a bare `req`) and `guided-review` (the 评审 chip). The two
+companion mods bring their own: `agenttrail` needs `git`, and `tourist` needs
+`git`, `node`, `gh` for PRs and an `omp`/`claude`/`codex` CLI (plus
+`TOURIST_BEETLE_HOST` if you use the requirement scope).
 
 ## What it assumes
 

@@ -6,5 +6,13 @@
     "cmd-s": "preview-plus.save",
     "cmd-shift-enter": "preview-plus.folder",
     "cmd-f": "preview-plus.find"
+  },
+  "global": {
+    "cmd-shift-m": "mod.open:agenttrail",
+    "cmd-shift-g": "mod.open:tourist"
+  },
+  "mod:agenttrail": {
+    "cmd-shift-up": "agenttrail.zoom-in",
+    "cmd-shift-down": "agenttrail.zoom-out"
   }
 }

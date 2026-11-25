@@ -4,13 +4,22 @@ A Herdr window for someone who runs several coding agents at once. The left colu
 lists every space and every agent on every machine, with what each is doing; the
 tabs carry a Files / Changes / 未读 switch on the right, and a file clicked anywhere
 (Cmd-click a link, a row in Files, a row in 未读) opens in one reading tab beside the
-work. Nothing here is a web view: it is one layout JSON, nine Herdr mods, three of
-Herdr's own, a theme file and one Python shim.
+work. Nothing here is a web view: it is one layout JSON, thirteen Herdr mods of its
+own (eleven the layout draws, two opened by their keys), three of Herdr's, a theme
+file and one Python shim.
 
 ![Agent Deck Plus](preview.png)
 
 The screenshot is a demo instance: three invented spaces (`demo`, `api`, `docs`) and
 six stand-in agents. No real session is shown.
+
+The folder also carries two mods that are opened only by their keys, not by the
+layout — `agenttrail` (`⌘⇧M`, a ticket dependency board) and `tourist` (`⌘⇧G`, an
+agent-planned walkthrough of a change). Each is a build of its own brief:
+[`agenttrail-RECIPE.md`](agenttrail-RECIPE.md) and [`tourist-RECIPE.md`](tourist-RECIPE.md),
+with [`preview-agenttrail.png`](preview-agenttrail.png) and
+[`preview-tourist.png`](preview-tourist.png). They need nothing from the layout;
+the layout needs nothing from them.
 
 ## What you see
 
@@ -129,9 +138,9 @@ program icons with their status mark, or the task/role badge when labelled, and 
   folds out ports with no worktree root.
 
 **Keys** (from `keys.json`; the ones this bundle ships are in `keys.json` here):
-- `⌘⇧O` Overview, `⌘⇧M` Agenttrail, `⌘⇧G` Tourist, `⇧⌘Y` Customize — the last
-  three are not part of this layout; drop those lines if you don't install those
-  mods.
+- `⌘⇧O` Overview, `⌘⇧M` Agenttrail, `⌘⇧G` Tourist. The last two are the two
+  companion mods in this folder; `⌘⇧O` is the Overview dialog. `⇧⌘Y` (Customize) is
+  not part of this build — drop that line if you carry it over from elsewhere.
 - `⌘B` folds the sidebar to the rail (`layout.toggle:sidebar`).
 - In the preview tab: `⌘⇧↑/↓` font, `⌘⇧/` source, `⌘S` save, `⌘⇧↵` open folder,
   `⌘F` find, `⌘⇧[`/`]` previous/next queued file.
@@ -160,9 +169,16 @@ mods/files-plus/                  main.js + 4 svg (a clone of the shipped `files
 mods/unread/                      main.js + queue.js + tests/ + package.json, inbox.svg
 mods/preview-plus/                main.js + progress.js + resize.js
 mods/live-ports/                  main.js + scan.js + plug/folder/external/stop.svg
+mods/agenttrail/                  main.js + trail.js + graph.js + resize.js, 9 svg
+mods/tourist/                     main.js + 22 modules + kit/ + views/ + ticket.mjs,
+                                  branches.mjs, omp-events.mjs, gh.mjs
 themes/nord-default.json          the dark palette
 bin/open                          the Python 3 shim (installs to ~/.local/bin/open)
-keys.json                         only the mod's own keys
+keys.json                         the layout's keys, ⌘⇧M/⌘⇧G, and preview-plus's
+agenttrail-RECIPE.md              the board's own brief
+tourist-RECIPE.md                 the tour's own brief
+preview-agenttrail.png            a build of the board
+preview-tourist.png               a build of the tour's setup screen
 ```
 
 The mod folders do **not** carry `gpui-kit.d.ts` or `jsconfig.json`: Herdr rewrites
@@ -204,7 +220,10 @@ space colours in `shared("space.colors")`, git state by `exec("git", …)`),
 per machine, `Usage` via `/proc`/`top`/`vm_stat`/`df`), `agent-deck-history` (past
 sessions), `files-plus` (tree + inline text), `unread` (the preview queue), 
 `preview-plus` (the reading tab: markdown, source toggle, find, save, Mermaid via
-`mmdc`), `live-ports` (`lsof`/`ss` per machine, published to `shared("live-ports")`).
+`mmdc`), `live-ports` (`lsof`/`ss` per machine, published to `shared("live-ports")`),
+plus the two key-bound companions `agenttrail` (a ticket board over `.wayfinder` and
+`.scratch`, see `agenttrail-RECIPE.md`) and `tourist` (an agent-planned walkthrough
+of a branch, commit, PR, repo, feature or requirement, see `tourist-RECIPE.md`).
 
 **Shipped mods it uses:** `workspace-chrome` (brand + footer), `workspace-status`
 (status strip), and the panel/mod assets it points into: `files`
@@ -266,9 +285,15 @@ window glyphs; tints are theme tokens (`dim`, `muted`, `foreground`, `accent`,
 - **`guided-review` is not in this bundle.** A 评审 chip only exists when a terminal
   carries `herdr.review`, and clicking it opens a tab of `mods/guided-review`, which
   you must install separately (or the tab opens empty).
-- **`tourist` is optional**: its `tours.json` populates the 导览 group in 未读; without
-  it the panel starts at the file list. It lives at
-  [BanTanger/herdr-mods/tourist](https://github.com/BanTanger/herdr-mods/tree/main/tourist).
+- **`tourist` is in this folder** and optional to the layout: its
+  `data/tourist/tours.json` is what fills the 导览 group in 未读, so without it that
+  group stays empty and the panel starts at the file list. Its own requirements
+  (an agent CLI, `gh`, `node`, `TOURIST_BEETLE_HOST` for the requirement scope) are
+  in `tourist-RECIPE.md`.
+- **`agenttrail` is in this folder** and optional too: it reads `.wayfinder` maps
+  and `.scratch` slates and needs `git`; its double-click target is `preview-plus`,
+  which this folder ships. `fit`, `live`, `expand` and `collapse` are implemented as
+  mod commands but nothing is bound to them.
 - **`mmdc` is optional**: without it a Mermaid fence stays the code it is, in a
   bordered box that says what to install.
 - **Theme tokens are derived.** `themes/nord-default.json` only sets
@@ -287,10 +312,9 @@ window glyphs; tints are theme tokens (`dim`, `muted`, `foreground`, `accent`,
   its cards 240/260 px minimum, port rows fixed at 54 px so the popup can be placed
   above the button.
 - **`⌘⇧↵` is bound twice**: `pane.zoom` globally and `preview-plus.folder` in
-  `mod:preview-plus`; while the preview pane has focus the mod wins. `⌘⇧O`, `⌘⇧M`,
-  `⌘⇧G`, `⇧⌘Y` in the author's `global` section point at mods this bundle does not
-  ship.
-- **`herdr-app check` passes on all eleven mods but prints scheduler warnings**
+  `mod:preview-plus`; while the preview pane has focus the mod wins. `⌘⇧M` and
+  `⌘⇧G` open the two companion mods; `⌘⇧O` opens the Overview (shipped here).
+- **`herdr-app check` passes on all thirteen mods but prints scheduler warnings**
   ("a reload stranded script tasks…") — they come from `init()` registering timers,
   which is the documented pattern; they are not errors.
 
@@ -299,8 +323,9 @@ window glyphs; tints are theme tokens (`dim`, `muted`, `foreground`, `accent`,
 Run these against a real Herdr; each one is something this build does.
 
 1. `herdr-app check ~/.config/herdr-app/mods/<name>` prints `check passed` for all
-   eleven mods (`agent-deck-agents`, `-spaces`, `-tabs`, `-pane`, `-labels`,
-   `-overview`, `-history`, `files-plus`, `unread`, `preview-plus`, `live-ports`).
+   thirteen mods (`agent-deck-agents`, `-spaces`, `-tabs`, `-pane`, `-labels`,
+   `-overview`, `-history`, `files-plus`, `unread`, `preview-plus`, `live-ports`,
+   `agenttrail`, `tourist`).
 2. `herdr-app do layout.switch '{"name":"agent-deck-plus"}'`: three columns appear —
    268 px sidebar (`chrome`), work area with a 42 px tab bar, 342 px right panel open
    on Files, 28 px status strip — and the sidebar's two halves split at the drag
@@ -324,3 +349,9 @@ Run these against a real Herdr; each one is something this build does.
 10. Start a listener (`python3 -m http.server 8123`) in a space: within 4 s the
     status bar shows a plug and a count, and the popup lists the port under that
     space, with `Open in browser` and a stop button.
+11. `⌘⇧M` on a repo holding `.scratch/<slug>/{map.md,issues/*.md}`: the board opens
+    with one card per ticket, arrows by `blockedby`, and clicking a card lights its
+    chain and starts a route (`agenttrail-RECIPE.md` has the full list).
+12. `⌘⇧G` on a repo with changes: a Tourist pane splits in showing 分支改动 with
+    `相对 <base> 有 N 个文件`; Enter on the depth step reaches a planning screen and
+    then a stop (`tourist-RECIPE.md` has the full list).
