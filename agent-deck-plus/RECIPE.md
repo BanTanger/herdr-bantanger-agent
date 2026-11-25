@@ -258,7 +258,11 @@ window glyphs; tints are theme tokens (`dim`, `muted`, `foreground`, `accent`,
   call it by absolute path) and `hc` on `PATH`.
 - **`prism-link` and Feishu.** Without `~/.local/bin/prism-link` the prism chips show
   `未关联` and the bind dialog fails on `exec("env", …)`. Without a `req` label nothing
-  is shown at all. Drop the prism code if you don't use Feishu.
+  is shown at all. A `req` label that carries no `req_url` opens the base kept in
+  shared state — `setShared("prism.feishu", "https://project.feishu.cn/<space>")` — or,
+  unset, the base of any live `req_url` on another terminal; with neither, the chip
+  opens no URL and shows a warning toast saying which key to set. Drop the prism code
+  if you don't use Feishu.
 - **`guided-review` is not in this bundle.** A 评审 chip only exists when a terminal
   carries `herdr.review`, and clicking it opens a tab of `mods/guided-review`, which
   you must install separately (or the tab opens empty).

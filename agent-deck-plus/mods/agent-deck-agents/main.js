@@ -22,6 +22,29 @@ import { prismPromptChip } from "./prism-prompt-view.js";
 // opens on data instead of waiting for `prism-link mine` (contract: issues/04).
 let mineCache = null;
 
+// agent-deck: where a bare `req` label opens. prism-link writes `req_url` on the label and that
+// always wins. Without one, the base comes from shared state —
+//   setShared("prism.feishu", "https://project.feishu.cn/<your-space>")
+// — or, if that is unset, from any live `req_url` (the part before `story/detail/`), so a person
+// who has bound anything once is configured already. With none of the three, the chip says so
+// instead of opening a guessed URL.
+const FEISHU = "prism.feishu";
+const feishuBase = () => {
+  const kept = shared(FEISHU);
+  if (typeof kept === "string" && kept.trim()) return kept.trim().replace(/\/+$/, "");
+  for (const term of terminals()) {
+    const url = term.labels?.req_url;
+    const at = typeof url === "string" ? url.indexOf("story/detail/") : -1;
+    if (at > 0) return url.slice(0, at).replace(/\/+$/, "");
+  }
+  return "";
+};
+const reqUrlOf = (labels, req) => {
+  if (labels?.req_url) return labels.req_url;
+  const base = feishuBase();
+  return base ? `${base}/story/detail/${req}` : null;
+};
+
 function find(node, id) {
   if (node?.id === id) return node;
   for (const child of node?.children ?? []) {
@@ -904,9 +927,7 @@ export default class Agents extends View {
       // agent-deck: the requirement this session reports to (`hc label t7 req=… req_url=…`), or the
       // prompt asking for one. They are exclusive: prismPrompts skips a labelled terminal.
       const req = byAddress.get(a.address)?.labels?.req;
-      const reqUrl = req
-        ? byAddress.get(a.address)?.labels?.req_url || `https://project.feishu.cn/zzhd/story/detail/${req}`
-        : null;
+      const reqUrl = req ? reqUrlOf(byAddress.get(a.address)?.labels, req) : null;
       const prompt = req ? null : prompts.get(a.address);
       // agent-deck: on the rail, resting on a row shows its wide card beside it.
       if (collapsed && !wide) {
@@ -1005,10 +1026,26 @@ export default class Agents extends View {
           // agent-deck: the requirement this session reports to, in words, one tone apart from the
           // unbound prompt; the number and the title are in the tooltip. Opens it in Feishu.
           .when(Boolean(req), el => el.child(chip(`prism-${a.address}`, "已关联", prismInk(dark), {
-            press: (e, cx) => { cx.stop_propagation(); if (e?.modifiers?.platform) this.openPickerFor(a, cx); else exec("open", [reqUrl]); },
+            press: (e, cx) => {
+              cx.stop_propagation();
+              if (e?.modifiers?.platform) return this.openPickerFor(a, cx);
+              // agent-deck: no base to open in yet — say so instead of doing nothing.
+              if (!reqUrl) {
+                notify({
+                  title: "飞书基址未设置",
+                  body: `setShared("prism.feishu", "https://project.feishu.cn/<空间>") · 或让终端带上 req_url（${req}）`,
+                  level: "warning",
+                  timeout: 12000,
+                });
+                return;
+              }
+              exec("open", [reqUrl]);
+            },
           })
             .flex_none()
-            .tooltip(`${cardLabel(req, this.mineTitle(req))} · 点击打开飞书 · ⌘点击改绑`)))
+            .tooltip(reqUrl
+              ? `${cardLabel(req, this.mineTitle(req))} · 点击打开飞书 · ⌘点击改绑`
+              : `${cardLabel(req, this.mineTitle(req))} · 未设置 prism.feishu：点击看怎么设`)))
           // agent-deck: the prompt for a session no requirement covers. It sits on this card, is
           // opened by a press, and is swiped away by a drag (prismPrompt).
           .when(Boolean(prompt), el => el.child(this.prismPrompt(prompt)))
