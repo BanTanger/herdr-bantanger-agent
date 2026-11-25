@@ -1,12 +1,12 @@
-# Herdr layout: Agent Deck Plus
+# Herdr layout: Bantanger Agent
 
-The [Agent Deck Plus](agent-deck-plus/) layout for [Herdr](https://herdr.dev): spaces
+The [Bantanger Agent](bantanger-agent/) layout for [Herdr](https://herdr.dev): spaces
 and agents on the left, Files / Changes / 未读 on the right, and one reading tab where
 Cmd-clicked files land.
 
-![Agent Deck Plus](agent-deck-plus/preview.png)
+![Bantanger Agent](bantanger-agent/preview.png)
 
-`agent-deck-plus/RECIPE.md` is the brief: another agent with an empty folder can build
+`bantanger-agent/RECIPE.md` is the brief: another agent with an empty folder can build
 it from there. The folder is laid out like `~/.config/herdr-app` (one layout, the mods
 it needs, its theme, the `open` shim), so installing it is copying the files.
 

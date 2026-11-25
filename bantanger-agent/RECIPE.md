@@ -1,4 +1,4 @@
-# Agent Deck Plus
+# Bantanger Agent
 
 A Herdr window for someone who runs several coding agents at once. The left column
 lists every space and every agent on every machine, with what each is doing; the
@@ -8,7 +8,7 @@ work. Nothing here is a web view: it is one layout JSON, thirteen Herdr mods of 
 own (eleven the layout draws, two opened by their keys), three of Herdr's, a theme
 file and one Python shim.
 
-![Agent Deck Plus](preview.png)
+![Bantanger Agent](preview.png)
 
 The screenshot is a demo instance: three invented spaces (`demo`, `api`, `docs`) and
 six stand-in agents. No real session is shown.
@@ -155,8 +155,8 @@ divider you can drag; the right panel's width is draggable; the whole sidebar is
 Files, laid out like `~/.config/herdr-app`:
 
 ```
-layouts/agent-deck-plus.json      the layout
-layouts/agent-deck-plus.png       the picture its settings row shows
+layouts/bantanger-agent.json      the layout
+layouts/bantanger-agent.png       the picture its settings row shows
 mods/agent-deck-agents/           main.js + badge, chip, prism-bind(-view), prism-prompt-view,
                                   prism-toast, review, review-chip, resume, title (+ 6 .test.mjs)
 mods/agent-deck-spaces/           main.js
@@ -209,7 +209,7 @@ root  row           canvas, divider 1 border, titlebar none, traffic_lights [12,
 ```
 
 Root also carries `theme {light:"paper", dark:"nord-default"}`, `terminal_padding
-[14,12]`, `preview: "layouts/agent-deck-plus.png"`.
+[14,12]`, `preview: "layouts/bantanger-agent.png"`.
 
 **Mods and what each is for:** `agent-deck-spaces` (space list, machine headers,
 space colours in `shared("space.colors")`, git state by `exec("git", …)`), 
@@ -326,7 +326,7 @@ Run these against a real Herdr; each one is something this build does.
    thirteen mods (`agent-deck-agents`, `-spaces`, `-tabs`, `-pane`, `-labels`,
    `-overview`, `-history`, `files-plus`, `unread`, `preview-plus`, `live-ports`,
    `agenttrail`, `tourist`).
-2. `herdr-app do layout.switch '{"name":"agent-deck-plus"}'`: three columns appear —
+2. `herdr-app do layout.switch '{"name":"bantanger-agent"}'`: three columns appear —
    268 px sidebar (`chrome`), work area with a 42 px tab bar, 342 px right panel open
    on Files, 28 px status strip — and the sidebar's two halves split at the drag
    divider.

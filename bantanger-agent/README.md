@@ -1,10 +1,10 @@
-# Agent Deck Plus
+# Bantanger Agent
 
 A Herdr layout for people who run several coding agents at once: a sidebar that
 says what every agent is doing, a tab bar that turns the right side into Files /
 Changes / 未读, and a reading pane where a Cmd-clicked file lands.
 
-![Agent Deck Plus](preview.png)
+![Bantanger Agent](preview.png)
 
 Everything here is a folder laid out like `~/.config/herdr-app`: one layout, the
 thirteen mods it uses (eleven the layout draws, plus `agenttrail` on `⌘⇧M` and
@@ -15,14 +15,14 @@ on. `RECIPE.md` builds the layout from an empty folder; `agenttrail-RECIPE.md` a
 ## Install
 
 ```sh
-herdr-app do layout.clone '{"name":"main","as":"agent-deck-plus"}'   # only if the name is taken
-cp layouts/agent-deck-plus.json  ~/.config/herdr-app/layouts/
-cp layouts/agent-deck-plus.png   ~/.config/herdr-app/layouts/
+herdr-app do layout.clone '{"name":"main","as":"bantanger-agent"}'   # only if the name is taken
+cp layouts/bantanger-agent.json  ~/.config/herdr-app/layouts/
+cp layouts/bantanger-agent.png   ~/.config/herdr-app/layouts/
 cp -R mods/*                    ~/.config/herdr-app/mods/            # each folder, never into an existing name
 cp themes/nord-default.json     ~/.config/herdr-app/themes/          # only if you don't have it
 cp bin/open                     ~/.local/bin/open && chmod +x ~/.local/bin/open
 herdr-app check ~/.config/herdr-app/mods/agent-deck-agents           # and each other mod
-herdr-app do layout.switch '{"name":"agent-deck-plus"}'
+herdr-app do layout.switch '{"name":"bantanger-agent"}'
 ```
 
 `keys.json` here holds `⌘⇧M`/`⌘⇧G` for the two companion mods, `mod:agenttrail`'s
