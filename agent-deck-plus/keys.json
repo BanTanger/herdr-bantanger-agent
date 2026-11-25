@@ -1,0 +1,10 @@
+{
+  "mod:preview-plus": {
+    "cmd-shift-up": "preview-plus.zoom-in",
+    "cmd-shift-down": "preview-plus.zoom-out",
+    "cmd-shift-/": "preview-plus.source",
+    "cmd-s": "preview-plus.save",
+    "cmd-shift-enter": "preview-plus.folder",
+    "cmd-f": "preview-plus.find"
+  }
+}

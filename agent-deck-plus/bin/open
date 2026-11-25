@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+"""Herdr Cmd-click bridge: open local text files in the preview-plus tab.
+
+Herdr.app hands file links to `open`. This shim runs only when the caller is
+the Herdr app; every other caller falls through to the real /usr/bin/open.
+The first click opens a preview-plus tab; later clicks reuse it, since the tab
+follows `~/.cache/herdr-open/request.json`. Every click is also appended to
+`~/.cache/herdr-open/queue.json` (`[{ "file", "at" }]`, newest last), which is
+the tab's preview queue: the files rail lists it and its reading progress.
+"""
+import json
+import os
+import subprocess
+import sys
+import time
+import urllib.parse
+
+REAL = "/usr/bin/open"
+HERDR_APP = "/Applications/Herdr.app/Contents/MacOS/Herdr"
+HERDR_CLI = os.path.expanduser("~/.local/bin/herdr-app")
+STATE = os.path.expanduser("~/.cache/herdr-open")
+MOD = "preview-plus"
+LIMIT = 1024 * 1024
+QUEUE_LIMIT = 40  # the mod keeps the same number; the oldest fall off
+
+
+def fallback() -> None:
+    os.execv(REAL, [REAL, *sys.argv[1:]])
+
+
+def parent_command() -> str:
+    try:
+        out = subprocess.run(
+            ["ps", "-o", "command=", "-p", str(os.getppid())],
+            capture_output=True, text=True, timeout=2,
+        )
+    except Exception:
+        return ""
+    return out.stdout.strip()
+
+
+def bridge_path(arg: str):
+    path = arg
+    if path.startswith("file://"):
+        url = urllib.parse.urlparse(path)
+        if url.netloc not in ("", "localhost"):
+            return None
+        path = urllib.parse.unquote(url.path)
+    if not os.path.isabs(path):
+        return None
+    try:
+        if not os.path.isfile(path) or os.path.getsize(path) > LIMIT:
+            return None
+        with open(path, "rb") as handle:
+            if b"\0" in handle.read(8192):
+                return None
+    except OSError:
+        return None
+    return path
+
+
+def cli(*args: str) -> dict:
+    """Runs `herdr-app do …` and returns its JSON reply ({} on any failure)."""
+    try:
+        out = subprocess.run(
+            [HERDR_CLI, "do", *args], capture_output=True, text=True, timeout=6,
+        )
+        reply = json.loads(out.stdout or "{}")
+    except Exception:
+        return {}
+    return reply if isinstance(reply, dict) else {}
+
+
+def read_tab() -> str:
+    try:
+        with open(os.path.join(STATE, "tab"), encoding="utf-8") as handle:
+            return handle.read().strip()
+    except OSError:
+        return ""
+
+
+def write_tab(tab: str) -> None:
+    if not tab:
+        return
+    path = os.path.join(STATE, "tab")
+    temporary = path + ".tmp"
+    with open(temporary, "w", encoding="utf-8") as handle:
+        handle.write(tab)
+    os.replace(temporary, path)
+
+
+def append_queue(path: str) -> None:
+    """Appends one click to the preview queue: newest last, no duplicate paths."""
+    target = os.path.join(STATE, "queue.json")
+    try:
+        with open(target, encoding="utf-8") as handle:
+            entries = json.load(handle)
+    except Exception:
+        entries = []
+    if not isinstance(entries, list):
+        entries = []
+    kept = [e for e in entries if isinstance(e, dict) and e.get("file") != path]
+    kept.append({"file": path, "at": int(time.time() * 1000)})
+    temporary = target + ".tmp"
+    with open(temporary, "w", encoding="utf-8") as handle:
+        json.dump(kept[-QUEUE_LIMIT:], handle, ensure_ascii=False)
+    os.replace(temporary, target)
+
+
+def main() -> None:
+    forced = os.environ.get("HERDR_OPEN_SHIM_FORCE") == "1"
+    if not forced and not parent_command().startswith(HERDR_APP):
+        fallback()
+    if len(sys.argv) != 2:
+        fallback()
+    path = bridge_path(sys.argv[1])
+    if path is None:
+        fallback()
+
+    os.makedirs(STATE, exist_ok=True)
+    request = os.path.join(STATE, "request.json")
+    temporary = request + ".tmp"
+    with open(temporary, "w", encoding="utf-8") as handle:
+        json.dump({"file": path}, handle, ensure_ascii=False)
+    os.replace(temporary, request)
+    # The queue is the rail's list; the request is only the file to show now.
+    append_queue(path)
+
+    # Reuse the tab an earlier click opened, when it still exists: it follows the
+    # request file, so showing it is enough.
+    tab = read_tab()
+    if tab and cli("tab.select", "--id", tab).get("ok"):
+        sys.exit(0)
+
+    props = json.dumps({"file": path}, ensure_ascii=False)
+    reply = cli("tab.new", json.dumps({"mod": MOD, "props": {"file": path}}, ensure_ascii=False))
+    tab = reply.get("tab") or ""
+    write_tab(tab)
+    if tab:
+        cli("tab.select", "--id", tab)
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
