@@ -29,8 +29,8 @@ section into yours rather than replacing the file.
 Needs Herdr.app 0.1.18 or newer with herdr-core, `herdr-app` on `PATH`, and the
 Python 3 in `/usr/bin` for `bin/open`. Optional: `mmdc` (Mermaid diagrams),
 `prism-link` (the 已关联 chip — set `setShared("prism.feishu", "https://project.feishu.cn/<space>")`
-if your labels carry a bare `req`), `guided-review` (the 评审 chip), `tourist`
-(the 导览 rows in 未读).
+if your labels carry a bare `req`), `guided-review` (the 评审 chip), and
+[tourist](https://github.com/BanTanger/herdr-mods/tree/main/tourist) (the 导览 rows in 未读).
 
 ## What it assumes
 

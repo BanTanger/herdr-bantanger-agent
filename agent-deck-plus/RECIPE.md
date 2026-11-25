@@ -129,9 +129,9 @@ program icons with their status mark, or the task/role badge when labelled, and 
   folds out ports with no worktree root.
 
 **Keys** (from `keys.json`; the ones this bundle ships are in `keys.json` here):
-- `⌘⇧O` Overview, `⌘⇧M` Agenttrail, `⌘⇧G` Tourist, `⌘⇧K` Walkthrough, `⇧⌘Y`
-  Customize — the last four are not part of this layout; drop those lines if you
-  don't install those mods.
+- `⌘⇧O` Overview, `⌘⇧M` Agenttrail, `⌘⇧G` Tourist, `⇧⌘Y` Customize — the last
+  three are not part of this layout; drop those lines if you don't install those
+  mods.
 - `⌘B` folds the sidebar to the rail (`layout.toggle:sidebar`).
 - In the preview tab: `⌘⇧↑/↓` font, `⌘⇧/` source, `⌘S` save, `⌘⇧↵` open folder,
   `⌘F` find, `⌘⇧[`/`]` previous/next queued file.
@@ -267,7 +267,8 @@ window glyphs; tints are theme tokens (`dim`, `muted`, `foreground`, `accent`,
   carries `herdr.review`, and clicking it opens a tab of `mods/guided-review`, which
   you must install separately (or the tab opens empty).
 - **`tourist` is optional**: its `tours.json` populates the 导览 group in 未读; without
-  it the panel starts at the file list.
+  it the panel starts at the file list. It lives at
+  [BanTanger/herdr-mods/tourist](https://github.com/BanTanger/herdr-mods/tree/main/tourist).
 - **`mmdc` is optional**: without it a Mermaid fence stays the code it is, in a
   bordered box that says what to install.
 - **Theme tokens are derived.** `themes/nord-default.json` only sets
@@ -287,8 +288,8 @@ window glyphs; tints are theme tokens (`dim`, `muted`, `foreground`, `accent`,
   above the button.
 - **`⌘⇧↵` is bound twice**: `pane.zoom` globally and `preview-plus.folder` in
   `mod:preview-plus`; while the preview pane has focus the mod wins. `⌘⇧O`, `⌘⇧M`,
-  `⌘⇧G`, `⌘⇧K`, `⇧⌘Y` in the author's `global` section point at mods this bundle
-  does not ship.
+  `⌘⇧G`, `⇧⌘Y` in the author's `global` section point at mods this bundle does not
+  ship.
 - **`herdr-app check` passes on all eleven mods but prints scheduler warnings**
   ("a reload stranded script tasks…") — they come from `init()` registering timers,
   which is the documented pattern; they are not errors.
